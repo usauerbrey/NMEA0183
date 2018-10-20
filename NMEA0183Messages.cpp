@@ -404,8 +404,8 @@ bool NMEA0183SetVTG(tNMEA0183Msg &NMEA0183Msg, double TrueCOG, double MagneticCO
   if ( !NMEA0183Msg.Init("VTG",Src) ) return false;
   if ( !NMEA0183Msg.AddDoubleField(TrueCOG,radToDeg,tNMEA0183Msg::DefDoubleFormat,"T") ) return false;
   if ( !NMEA0183Msg.AddDoubleField(MagneticCOG,radToDeg,tNMEA0183Msg::DefDoubleFormat,"M") ) return false;
-  if ( !NMEA0183Msg.AddDoubleField(SOG,msTokn,tNMEA0183Msg::DefDoubleFormat,"K") ) return false;
-  if ( !NMEA0183Msg.AddDoubleField(SOG,msTokmh,tNMEA0183Msg::DefDoubleFormat,"N") ) return false;
+  if ( !NMEA0183Msg.AddDoubleField(SOG,msTokn,tNMEA0183Msg::DefDoubleFormat,"N") ) return false;
+  if ( !NMEA0183Msg.AddDoubleField(SOG,msTokmh,tNMEA0183Msg::DefDoubleFormat,"K") ) return false;
 
   return true;
 }
