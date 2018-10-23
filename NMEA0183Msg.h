@@ -147,11 +147,11 @@ class tNMEA0183Msg
 
     // Add Latitude field. Also E/W will be added. Latitude is in degrees. Negative value is W. E.g.
     // AddLatitudeField(-5.2345); -> ,5.235,W
-    bool AddLatitudeField(double Latitude, const char *Format="%.5f");
+    bool AddLatitudeField(double Latitude, const char *Format="%.3f");
     
     // Add Longitude field. Also N/S will be added. Longitude is in degrees. Negative value is S. E.g.
     // AddLongitudeField(-5.2345); -> ,514.070,S
-    bool AddLongitudeField(double Longitude, const char *Format="%011.5f");
+    bool AddLongitudeField(double Longitude, const char *Format="%09.3f");
 
     // Helper function to convert GPSTime to NMEA0183 time (hhmmss.sss). E.g. 42000.55 -> 114000.55
     static double GPSTimeToNMEA0183Time(double GPSTime);
