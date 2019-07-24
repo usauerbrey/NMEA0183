@@ -265,6 +265,15 @@ bool NMEA0183SetVTG(tNMEA0183Msg &NMEA0183Msg, double TrueCOG, double MagneticCO
 bool NMEA0183BuildVTG(char* msg, const char Src[], double TrueCOG, double MagneticCOG, double SOG);
 
 //*****************************************************************************
+bool NMEA0183ParseXTE_nc(const tNMEA0183Msg &NMEA0183Msg, double &XTE);
+
+inline bool NMEA0183ParseXTE(const tNMEA0183Msg &NMEA0183Msg, double &XTE) {
+  return (NMEA0183Msg.IsMessageCode("XTE")
+            ?NMEA0183ParseXTE_nc(NMEA0183Msg,XTE)
+            :false);
+}
+
+//*****************************************************************************
 // Rate of turn will be returned be in radians
 bool NMEA0183ParseROT_nc(const tNMEA0183Msg &NMEA0183Msg,double &RateOfTurn);
 

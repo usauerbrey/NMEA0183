@@ -377,6 +377,19 @@ bool NMEA0183SetRMC(tNMEA0183Msg &NMEA0183Msg, double GPSTime, double Latitude, 
 
 
 //*****************************************************************************
+// $GPXTE,A,A,0.030,L,N,*71
+bool NMEA0183ParseXTE_nc(const tNMEA0183Msg &NMEA0183Msg, double &xte) {
+  bool result=( NMEA0183Msg.FieldCount()>=6 );
+
+  if ( result ) {
+  	xte=atof(NMEA0183Msg.Field(2)); //*nmTom;
+		//Left is negative in NMEA2000. Right is positive.
+		if (NMEA0183Msg.Field(3)[0]=='R') xte=-xte;
+  }
+  return result;
+}
+
+//*****************************************************************************
 // $GPVTG,89.34,T,81.84,M,0.00,N,0.01,K*24
 bool NMEA0183ParseVTG_nc(const tNMEA0183Msg &NMEA0183Msg, double &TrueCOG, double &MagneticCOG, double &SOG) {
   bool result=( NMEA0183Msg.FieldCount()>=8 );
