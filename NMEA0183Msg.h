@@ -97,9 +97,8 @@ class tNMEA0183Msg
     static inline int GetDay(const tmElements_t &TimeElements) { return TimeElements.tm_mday; }
     static inline time_t makeTime(tmElements_t &TimeElements) { return mktime(&TimeElements); }
     static inline void breakTime(time_t time, tmElements_t &TimeElements) { TimeElements=*localtime(&time); }
-    static time_t daysToTime_t(unsigned long val);
-    #endif
     static unsigned long elapsedDaysSince1970(time_t dt);
+    static time_t daysToTime_t(unsigned long val);
 
   protected:
     void ForceNullTermination() { Data[MAX_NMEA0183_MSG_LEN-1]=0; } // Just force null termination for data
@@ -147,9 +146,6 @@ class tNMEA0183Msg
     // Add string field. E.g. AddStrField("K") causes ,K, on final message.
     bool AddStrField(const char *FieldData);
 
-    //
-    bool AddUInt32Field(uint32_t val);
-
     // Add double field. val must be in SI units (as in NMEA2000). Provide multiplier for conversion and
     // Format (default %.1f), if necessary. If you also provide Unit, it will be added as own field.
     // Note also that function tests is value valid and adds empty field, if it is not.
@@ -166,18 +162,22 @@ class tNMEA0183Msg
 
     // Add Latitude field. Also E/W will be added. Latitude is in degrees. Negative value is W. E.g.
     // AddLatitudeField(-5.2345); -> ,5.235,W
-    bool AddLatitudeField(double Latitude, const char *Format="%.3f");
-
+//    bool AddLatitudeField(double Latitude, const char *Format="%.3f");
+//    bool AddLatitudeField(double Latitude, const char *Format="%.3f00");
+    bool AddLatitudeField(double Latitude, const char *Format="%.5f");
+    
     // Add Longitude field. Also N/S will be added. Longitude is in degrees. Negative value is S. E.g.
     // AddLongitudeField(-5.2345); -> ,514.070,S
-    bool AddLongitudeField(double Longitude, const char *Format="%.3f");
+//    bool AddLongitudeField(double Longitude, const char *Format="%09.3f");
+//    bool AddLongitudeField(double Longitude, const char *Format="%09.3f00");
+    bool AddLongitudeField(double Longitude, const char *Format="%011.5f");
 
     // Helper function to convert GPSTime to NMEA0183 time (hhmmss.sss). E.g. 42000.55 -> 114000.55
     static double GPSTimeToNMEA0183Time(double GPSTime);
-
+    
     // Helper function to convert double angle to ddmm.zzz format. E.g. 5.2345 -> 514.070
     static double DoubleToddmm(double val);
-
+    
     // Helper function to convert days since 1970 to ddmmyyyy.
     static unsigned long DaysToNMEA0183Date(unsigned long val);
 };
