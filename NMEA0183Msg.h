@@ -165,7 +165,7 @@ class tNMEA0183Msg
 
     // Add Longitude field. Also N/S will be added. Longitude is in degrees. Negative value is S. E.g.
     // AddLongitudeField(-5.2345); -> ,514.070,S
-    bool AddLongitudeField(double Longitude, const char *Format="%.3f");
+    bool AddLongitudeField(double Longitude, const char *Format="%09.3f");
 
     // Helper function to convert GPSTime to NMEA0183 time (hhmmss.sss). E.g. 42000.55 -> 114000.55
     static double GPSTimeToNMEA0183Time(double GPSTime);
