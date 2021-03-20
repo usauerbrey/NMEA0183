@@ -145,6 +145,8 @@ bool tNMEA0183::SendMessage(const tNMEA0183Msg &NMEA0183Msg) {
 bool tNMEA0183::CanSendByte() {
   #if defined(ARDUINO_ARCH_ESP32)
   return true;
+  #elif defined(ARDUINO_ARCH_ESP8266)
+  return true;
   #else
   return port->availableForWrite() > 0;
   #endif
