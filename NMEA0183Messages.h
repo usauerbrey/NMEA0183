@@ -198,37 +198,50 @@ inline bool NMEA0183ParseGGA(const tNMEA0183Msg &NMEA0183Msg, double &GPSTime, d
             :false);
 }
 
-inline bool NMEA0183ParseGGA(const tNMEA0183Msg &NMEA0183Msg, tGGA &gga) {
-
-	return NMEA0183ParseGGA(NMEA0183Msg,gga.GPSTime,gga.latitude,gga.longitude,gga.GPSQualityIndicator,
-										gga.satelliteCount,gga.HDOP,gga.altitude,gga.geoidalSeparation,gga.DGPSAge,gga.DGPSReferenceStationID);
-}
+bool NMEA0183SetGGA(tNMEA0183Msg &NMEA0183Msg, double GPSTime, double Latitude, double Longitude, int GPSQualityIndicator, int SatelliteCount, 
+	                  double HDOP, double Altitude, double GeoidalSeparation, double DGPSAge, int DGPSReferenceStationID, const char *Src="GP");
 
 //*****************************************************************************
-bool NMEA0183SetGGA(tNMEA0183Msg &NMEA0183Msg, double GPSTime, double Latitude, double Longitude,
-          	uint32_t GPSQualityIndicator, uint32_t SatelliteCount, double HDOP, double Altitude, double GeoidalSeparation,
-	          double DGPSAge, uint32_t DGPSReferenceStationID, const char *Src="GP");
+bool NMEA0183ParseGLL_nc(const tNMEA0183Msg &NMEA0183Msg, double GPSTime, double Latitude, double Longitude, double status);
 
-
-//*****************************************************************************
-bool NMEA0183ParseGLL_nc(const tNMEA0183Msg &NMEA0183Msg, tGLL &gll);
-
-inline bool NMEA0183ParseGLL(const tNMEA0183Msg &NMEA0183Msg, tGLL &gll) {
+inline bool NMEA0183ParseGLL(const tNMEA0183Msg &NMEA0183Msg, double GPSTime, double Latitude, double Longitude, double status) {
   return (NMEA0183Msg.IsMessageCode("GLL")
-            ?NMEA0183ParseGLL_nc(NMEA0183Msg,gll)
+            ?NMEA0183ParseGLL_nc(NMEA0183Msg,GPSTime,Latitude,Longitude,status)
             :false);
 }
 
-//*****************************************************************************
-bool NMEA0183SetGLL(tNMEA0183Msg &NMEA0183Msg, double GPSTime, double Latitude, double Longitude, const char *Src="GP");
+bool NMEA0183SetGLL(tNMEA0183Msg &NMEA0183Msg, double GPSTime, double Latitude, double Longitude, double status, const char *Src="GP");
 
 //*****************************************************************************
+/*
 bool NMEA0183ParseRMB_nc(const tNMEA0183Msg &NMEA0183Msg, tRMB &rmb);
 
 inline bool NMEA0183ParseRMB(const tNMEA0183Msg &NMEA0183Msg, tRMB &rmb) {
     return (NMEA0183Msg.IsMessageCode("RMB") ?
         NMEA0183ParseRMB_nc(NMEA0183Msg, rmb) : false);
 }
+*/
+
+//*****************************************************************************
+// RMB
+bool NMEA0183ParseRMB_nc(const tNMEA0183Msg &NMEA0183Msg, double &xte, double &Latitude, double &Longitude,
+	                  double &dtw, double &btw, double &vmg, char &arrivalAlarm, char &originID, char &destID, time_t *DateTime = 0);
+
+inline bool NMEA0183ParseRMB(const tNMEA0183Msg &NMEA0183Msg, double &xte, double &Latitude, double &Longitude,
+	                  double &dtw, double &btw, double &vmg, char &arrivalAlarm, char &originID, char &destID, time_t *DateTime = 0) {
+	(void)DateTime;
+	return (NMEA0183Msg.IsMessageCode("RMB")
+		? NMEA0183ParseRMB_nc(NMEA0183Msg, xte, Latitude, Longitude, dtw, btw, vmg, arrivalAlarm, originID, destID, DateTime)
+		: false);
+}
+
+inline bool NMEA0183ParseRMB(const tNMEA0183Msg &NMEA0183Msg, tRMB &rmb, time_t *DateTime = 0) {
+
+	return NMEA0183ParseRMB(NMEA0183Msg, rmb.xte, rmb.latitude, rmb.longitude, rmb.dtw, rmb.btw, rmb.vmg, rmb.arrivalAlarm, rmb.originID[NMEA0183_MAX_WP_NAME_LENGTH], rmb.destID[NMEA0183_MAX_WP_NAME_LENGTH], DateTime);
+}
+
+bool NMEA0183SetRMB(tNMEA0183Msg &NMEA0183Msg, double XTE, double Latitude, double Longitude,
+	double DTW, double BTW, double VMG, char arrivalAlarm, char originID[], char destID[], const char *Src = "GP");
 
 //*****************************************************************************
 // RMC
@@ -251,11 +264,11 @@ inline bool NMEA0183ParseRMC(const tNMEA0183Msg &NMEA0183Msg, double &GPSTime, c
 
 inline bool NMEA0183ParseRMC(const tNMEA0183Msg &NMEA0183Msg, double &GPSTime, double &Latitude, double &Longitude,
                       double &TrueCOG, double &SOG, unsigned long &DaysSince1970, double &Variation, time_t *DateTime=0) {
-  (void)DateTime;
+	(void)DateTime;
   char Status;
-  return (NMEA0183Msg.IsMessageCode("RMC")
-            ?NMEA0183ParseRMC_nc(NMEA0183Msg, GPSTime, Status, Latitude, Longitude, TrueCOG, SOG, DaysSince1970, Variation, DateTime)
-            :false);
+    return (NMEA0183Msg.IsMessageCode("RMC")
+        ?NMEA0183ParseRMC_nc(NMEA0183Msg, GPSTime, Latitude, Longitude, TrueCOG, SOG, DaysSince1970, Variation, DateTime)
+        :false);
 }
 
 inline bool NMEA0183ParseRMC(const tNMEA0183Msg &NMEA0183Msg, tRMC &rmc, time_t *DateTime=0) {
@@ -264,7 +277,7 @@ inline bool NMEA0183ParseRMC(const tNMEA0183Msg &NMEA0183Msg, tRMC &rmc, time_t 
 }
 
 bool NMEA0183SetRMC(tNMEA0183Msg &NMEA0183Msg, double GPSTime, double Latitude, double Longitude,
-                      double TrueCOG, double SOG, unsigned long DaysSince1970, double Variation, const char *Src="GP");
+    double TrueCOG, double SOG, unsigned long DaysSince1970, double Variation, const char *Src="GP");
 
 //*****************************************************************************
 // COG will be returned be in radians
@@ -283,17 +296,13 @@ bool NMEA0183SetVTG(tNMEA0183Msg &NMEA0183Msg, double TrueCOG, double MagneticCO
 bool NMEA0183BuildVTG(char* msg, const char Src[], double TrueCOG, double MagneticCOG, double SOG);
 
 //*****************************************************************************
-// TrueHeading,MagneticHeading will be returned be in radians
-// SOW will be returned in m/s
-bool NMEA0183ParseVHW_nc(const tNMEA0183Msg &NMEA0183Msg, double &TrueHeading, double &MagneticHeading, double &SOW);
+bool NMEA0183ParseXTE_nc(const tNMEA0183Msg &NMEA0183Msg, double &XTE);
 
-inline bool NMEA0183ParseVHW(const tNMEA0183Msg &NMEA0183Msg, double &TrueHeading, double &MagneticHeading, double &SOW) {
-  return (NMEA0183Msg.IsMessageCode("VHW")
-            ?NMEA0183ParseVHW_nc(NMEA0183Msg,TrueHeading,MagneticHeading,SOW)
+inline bool NMEA0183ParseXTE(const tNMEA0183Msg &NMEA0183Msg, double &XTE) {
+  return (NMEA0183Msg.IsMessageCode("XTE")
+            ?NMEA0183ParseXTE_nc(NMEA0183Msg,XTE)
             :false);
 }
-
-bool NMEA0183SetVHW(tNMEA0183Msg &NMEA0183Msg, double TrueHeading, double MagneticHeading, double SOW, const char *Src="VW");
 
 //*****************************************************************************
 // Rate of turn will be returned be in radians
@@ -384,6 +393,17 @@ inline bool NMEA0183ParseBOD(const tNMEA0183Msg &NMEA0183Msg, tBOD &bod) {
 }
 
 //*****************************************************************************
+// MWD - Wind Direction & Speed
+bool NMEA0183ParseMWD_nc(const tNMEA0183Msg &NMEA0183Msg,double &WindDirection, double &WindSpeed);
+
+inline bool NMEA0183ParseMWD(const tNMEA0183Msg &NMEA0183Msg,double &WindDirection, double &WindSpeed) {
+  return (NMEA0183Msg.IsMessageCode("MWD")
+            ?NMEA0183ParseMWD_nc(NMEA0183Msg,WindDirection,WindSpeed)
+            :false);
+}
+
+bool NMEA0183SetMWD(tNMEA0183Msg &NMEA0183Msg, double WindDirection, double WindSpeed, const char *Src="II");
+//*****************************************************************************
 // MWV - Wind Speed and Angle
 bool NMEA0183ParseMWV_nc(const tNMEA0183Msg &NMEA0183Msg,double &WindAngle, tNMEA0183WindReference &Reference, double &WindSpeed);
 
@@ -393,8 +413,7 @@ inline bool NMEA0183ParseMWV(const tNMEA0183Msg &NMEA0183Msg,double &WindAngle, 
             :false);
 }
 
-bool NMEA0183SetMWV(tNMEA0183Msg &NMEA0183Msg, double WindAngle, tNMEA0183WindReference Reference, double WindSpeed, const char *Src="II");
-//*****************************************************************************
+bool NMEA0183SetMWV(tNMEA0183Msg &NMEA0183Msg, double WindAngle, tNMEA0183WindReference Reference, double WindSpeed, const char *Src="II");//*****************************************************************************
 // GSV - GPS Satellites in view
 bool NMEA0183SetGSV(tNMEA0183Msg &NMEA0183Msg, uint32_t totalMSG, uint32_t thisMSG, uint32_t SatelliteCount, 
 					uint32_t PRN1, uint32_t Elevation1, uint32_t Azimuth1, uint32_t SNR1,
@@ -403,6 +422,19 @@ bool NMEA0183SetGSV(tNMEA0183Msg &NMEA0183Msg, uint32_t totalMSG, uint32_t thisM
 					uint32_t PRN4, uint32_t Elevation4, uint32_t Azimuth4, uint32_t SNR4,
 					const char *Src="GP");
 
+//*****************************************************************************
+// XDR - Transducer Measurements
+/*
+bool NMEA0183ParseXDR_nc(const tNMEA0183Msg &NMEA0183Msg,double &WindDirection, double &WindSpeed);
+
+inline bool NMEA0183ParseMWD(const tNMEA0183Msg &NMEA0183Msg,double &WindDirection, double &WindSpeed) {
+  return (NMEA0183Msg.IsMessageCode("MWD")
+            ?NMEA0183ParseMWD_nc(NMEA0183Msg,WindDirection,WindSpeed)
+            :false);
+}
+*/
+
+bool NMEA0183SetXDR(tNMEA0183Msg &NMEA0183Msg, char TransducerType, double TransducerValue, const char *TransducerName, const char *Src="II");
 //*****************************************************************************
 // ZDA - Time & Date
 bool NMEA0183ParseZDA(const tNMEA0183Msg &NMEA0183Msg, double &GPSTime, int &GPSDay,
@@ -415,5 +447,9 @@ inline bool NMEA0183ParseZDA(const tNMEA0183Msg &NMEA0183Msg, tZDA &zda) {
 	return NMEA0183ParseZDA(NMEA0183Msg, zda.GPSTime, zda.GPSDay, zda.GPSMonth, zda.GPSYear, zda.LZD, zda.LZMD);
 }
 
+
+//*****************************************************************************
+// VHW - Water speed and heading
+bool NMEA0183SetVHW(tNMEA0183Msg &NMEA0183Msg, double TrueHeading, double MagneticHeading, double BoatSpeed, const char *Src="II");
 
 #endif
