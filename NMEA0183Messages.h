@@ -1,7 +1,7 @@
 /*
 NMEA0183Messages.h
 
-Copyright (c) 2015-2019 Timo Lappalainen, Kave Oy, www.kave.fi
+Copyright (c) 2015-2021 Timo Lappalainen, Kave Oy, www.kave.fi
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -141,6 +141,22 @@ struct tBOD {
 	//Destination waypoint ID
   char destID[NMEA0183_MAX_WP_NAME_LENGTH];
 };
+
+struct tZDA {
+	// UTC time (hours, minutes, seconds, may have fractional subsecond)
+	double GPSTime;
+	// Day, 01 to 31
+	int GPSDay;
+	// Month, 01 to 12
+	int GPSMonth;
+	// Year (4 digits)
+	int GPSYear;
+	// Local zone description, 00 to + - 13 hours (- means East longitude)
+	int LZD;
+	// Local zone minutes description, 00 to +-59 (- means East longitude)
+	int LZMD;
+};
+
 
 enum tNMEA0183WindReference {
                             NMEA0183Wind_True=0,
@@ -327,7 +343,10 @@ inline bool NMEA0183ParseVDM(const tNMEA0183Msg &NMEA0183Msg, uint8_t &pkgCnt, u
   return (NMEA0183Msg.IsMessageCode("VDM") ?
 		NMEA0183ParseVDM_nc(NMEA0183Msg, pkgCnt, pkgNmb, seqMessageId, channel, length, bitstream, fillBits) : false);
 }
-
+bool NMEA0183SetVDM(tNMEA0183Msg &NMEA0183Msg, char *channel, char *bitstream, const char *Src="AI");
+bool NMEA0183SetVDM(tNMEA0183Msg &NMEA0183Msg, char *channel, char *bitstream,  uint32_t count, uint32_t number, uint32_t id, uint32_t fillbits, const char *Src="AI");
+bool NMEA0183SetVDO(tNMEA0183Msg &NMEA0183Msg, char *channel, char *bitstream, const char *Src="AI");
+bool NMEA0183SetVDO(tNMEA0183Msg &NMEA0183Msg, char *channel, char *bitstream,  uint32_t count, uint32_t number, uint32_t id, uint32_t fillbits, const char *Src="AI");
 //*****************************************************************************
 //Parse a single NMEA0183 RTE message into a tRTE struct.
 //Depending on the size of the route a GPS will send a single RTE message or send multiple RTE messages via NMEA0183.
@@ -359,6 +378,17 @@ inline bool NMEA0183ParseBOD(const tNMEA0183Msg &NMEA0183Msg, tBOD &bod) {
 }
 
 //*****************************************************************************
+// MWD - Wind Direction & Speed
+bool NMEA0183ParseMWD_nc(const tNMEA0183Msg &NMEA0183Msg,double &WindDirection, double &WindSpeed);
+
+inline bool NMEA0183ParseMWD(const tNMEA0183Msg &NMEA0183Msg,double &WindDirection, double &WindSpeed) {
+  return (NMEA0183Msg.IsMessageCode("MWD")
+            ?NMEA0183ParseMWD_nc(NMEA0183Msg,WindDirection,WindSpeed)
+            :false);
+}
+
+bool NMEA0183SetMWD(tNMEA0183Msg &NMEA0183Msg, double WindDirection, double WindSpeed, const char *Src="II");
+//*****************************************************************************
 // MWV - Wind Speed and Angle
 bool NMEA0183ParseMWV_nc(const tNMEA0183Msg &NMEA0183Msg,double &WindAngle, tNMEA0183WindReference &Reference, double &WindSpeed);
 
@@ -368,7 +398,38 @@ inline bool NMEA0183ParseMWV(const tNMEA0183Msg &NMEA0183Msg,double &WindAngle, 
             :false);
 }
 
-bool NMEA0183SetMWV(tNMEA0183Msg &NMEA0183Msg, double WindAngle, tNMEA0183WindReference Reference, double WindSpeed, const char *Src="II");
+bool NMEA0183SetMWV(tNMEA0183Msg &NMEA0183Msg, double WindAngle, tNMEA0183WindReference Reference, double WindSpeed, const char *Src="II");//*****************************************************************************
+// GSV - GPS Satellites in view
+bool NMEA0183SetGSV(tNMEA0183Msg &NMEA0183Msg, uint32_t totalMSG, uint32_t thisMSG, uint32_t SatelliteCount, 
+					uint32_t PRN1, uint32_t Elevation1, uint32_t Azimuth1, uint32_t SNR1,
+					uint32_t PRN2, uint32_t Elevation2, uint32_t Azimuth2, uint32_t SNR2,
+					uint32_t PRN3, uint32_t Elevation3, uint32_t Azimuth3, uint32_t SNR3,
+					uint32_t PRN4, uint32_t Elevation4, uint32_t Azimuth4, uint32_t SNR4,
+					const char *Src="GP");
+
+//*****************************************************************************
+// XDR - Transducer Measurements
+/*
+bool NMEA0183ParseXDR_nc(const tNMEA0183Msg &NMEA0183Msg,double &WindDirection, double &WindSpeed);
+
+inline bool NMEA0183ParseMWD(const tNMEA0183Msg &NMEA0183Msg,double &WindDirection, double &WindSpeed) {
+  return (NMEA0183Msg.IsMessageCode("MWD")
+            ?NMEA0183ParseMWD_nc(NMEA0183Msg,WindDirection,WindSpeed)
+            :false);
+}
+*/
+
+bool NMEA0183SetXDR(tNMEA0183Msg &NMEA0183Msg, char TransducerType, double TransducerValue, const char *TransducerName, const char *Src="II");
+//*****************************************************************************
+// ZDA - Time & Date
+bool NMEA0183ParseZDA(const tNMEA0183Msg &NMEA0183Msg, double &GPSTime, int &GPSDay,
+					int &GPSMonth, int &GPSYear, int &LZD, int &LZMD);
+
+inline bool NMEA0183ParseZDA(const tNMEA0183Msg &NMEA0183Msg, tZDA &zda) {
+
+	return NMEA0183ParseZDA(NMEA0183Msg, zda.GPSTime, zda.GPSDay, zda.GPSMonth, zda.GPSYear, zda.LZD, zda.LZMD);
+}
+
 
 //*****************************************************************************
 // VHW - Water speed and heading

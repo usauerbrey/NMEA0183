@@ -1,7 +1,7 @@
 /*
 NMEA0183.cpp
 
-Copyright (c) 2015-2019 Timo Lappalainen, Kave Oy, www.kave.fi
+Copyright (c) 2015-2021 Timo Lappalainen, Kave Oy, www.kave.fi
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -144,6 +144,8 @@ bool tNMEA0183::SendMessage(const tNMEA0183Msg &NMEA0183Msg) {
 // availableForWrite does not exists on all implementations.
 bool tNMEA0183::CanSendByte() {
   #if defined(ARDUINO_ARCH_ESP32)
+  return true;
+  #elif defined(ARDUINO_ARCH_ESP8266)
   return true;
   #else
   return port->availableForWrite() > 0;

@@ -1,7 +1,7 @@
 /*
 NMEA0183Messages.cpp
 
-Copyright (c) 2015-2019 Timo Lappalainen, Kave Oy, www.kave.fi
+Copyright (c) 2015-2021 Timo Lappalainen, Kave Oy, www.kave.fi
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -447,6 +447,36 @@ bool NMEA0183SetVTG(tNMEA0183Msg &NMEA0183Msg, double TrueCOG, double MagneticCO
 }
 
 //*****************************************************************************
+// $VWVHW,x.x,T,x.x,M,x.x,N,x.x,K*24
+bool NMEA0183ParseVHW_nc(const tNMEA0183Msg &NMEA0183Msg, double &TrueHeading, double &MagneticHeading, double &SOW) {
+  bool result=( NMEA0183Msg.FieldCount()>=8 );
+
+  if ( result ) {
+    TrueHeading=NMEA0183GetDouble(NMEA0183Msg.Field(0),degToRad);
+    MagneticHeading=NMEA0183GetDouble(NMEA0183Msg.Field(2),degToRad);
+    if (NMEA0183Msg.Field(6)[0]!=0) {  // km/h is valid
+      SOW=NMEA0183GetDouble(NMEA0183Msg.Field(6),kmhToms);
+    } else {
+      SOW=NMEA0183GetDouble(NMEA0183Msg.Field(4),knToms);
+    }
+  }
+
+  return result;
+}
+
+//*****************************************************************************
+// VHW - Water speed and heading
+bool NMEA0183SetVHW(tNMEA0183Msg &NMEA0183Msg, double TrueHeading, double MagneticHeading, double BoatSpeed, const char *Src) {
+  if ( !NMEA0183Msg.Init("VHW",Src) ) return false;
+  if ( !NMEA0183Msg.AddDoubleField(TrueHeading,radToDeg,tNMEA0183Msg::DefDoubleFormat,"T") ) return false;
+  if ( !NMEA0183Msg.AddDoubleField(MagneticHeading,radToDeg,tNMEA0183Msg::DefDoubleFormat,"M") ) return false;
+  if ( !NMEA0183Msg.AddDoubleField(BoatSpeed,msTokn,tNMEA0183Msg::DefDoubleFormat,"N") ) return false;
+  if ( !NMEA0183Msg.AddDoubleField(BoatSpeed,msTokmh,tNMEA0183Msg::DefDoubleFormat,"K") ) return false;
+
+  return true;
+}
+
+//*****************************************************************************
 // Helper to avoid enabling floating point support
 int sprintfDouble2(char* msg, double val)
 {
@@ -614,6 +644,59 @@ bool NMEA0183ParseVDM_nc(const tNMEA0183Msg &NMEA0183Msg,
 
   return result;
 }
+bool NMEA0183SetVDM(tNMEA0183Msg &NMEA0183Msg, char *channel, char *bitstream, const char *Src) {
+	if ( !NMEA0183Msg.Init("VDM",Src, '!') ) return false;    // field 1: packet identifier,  VDM
+	if ( !NMEA0183Msg.AddUInt32Field(1) ) return false;  // field 2: fragment count
+	if ( !NMEA0183Msg.AddUInt32Field(1) ) return false;  // field 3: fragment number
+	if ( !NMEA0183Msg.AddEmptyField() ) return false;  // field 4: sequential message ID	
+	if ( !NMEA0183Msg.AddStrField(channel) ) return false;  // field 5: Radio Channel code,  A or B
+	if ( !NMEA0183Msg.AddStrField(bitstream) ) return false;  // field 6: VDM payload data
+	if ( !NMEA0183Msg.AddUInt32Field(0) ) return false;  // field 7: number of fillbits (0-5)
+  
+  return true;
+}
+bool NMEA0183SetVDM(tNMEA0183Msg &NMEA0183Msg, char *channel, char *bitstream, uint32_t count, uint32_t number, uint32_t id, uint32_t fillbits,  const char *Src) {
+	if ( !NMEA0183Msg.Init("VDM",Src, '!') ) return false;    // field 1: packet identifier,  VDM
+	if ( !NMEA0183Msg.AddUInt32Field(count) ) return false;  // field 2: fragment count
+	if ( !NMEA0183Msg.AddUInt32Field(number) ) return false;  // field 3: fragment number
+	if (number == 1 && count == 1){
+			if ( !NMEA0183Msg.AddEmptyField() ) return false;  // field 4: sequential message ID	
+	}else{
+			if ( !NMEA0183Msg.AddUInt32Field(id) ) return false;// field 4: sequential message ID
+	}
+	if ( !NMEA0183Msg.AddStrField(channel) ) return false;  // field 5: Radio Channel code,  A or B
+	if ( !NMEA0183Msg.AddStrField(bitstream) ) return false;  // field 6: VDM payload data
+	if ( !NMEA0183Msg.AddUInt32Field(fillbits) ) return false;  // field 7: number of fillbits (0-5)
+  
+  return true;
+}
+bool NMEA0183SetVDO(tNMEA0183Msg &NMEA0183Msg, char *channel, char *bitstream, const char *Src) {
+	if ( !NMEA0183Msg.Init("VDO",Src, '!') ) return false;    // field 1: packet identifier,  VDM
+	if ( !NMEA0183Msg.AddUInt32Field(1) ) return false;  // field 2: fragment count
+	if ( !NMEA0183Msg.AddUInt32Field(1) ) return false;  // field 3: fragment number
+	if ( !NMEA0183Msg.AddEmptyField() ) return false;  // field 4: sequential message ID	
+	if ( !NMEA0183Msg.AddStrField(channel) ) return false;  // field 5: Radio Channel code,  A or B
+	if ( !NMEA0183Msg.AddStrField(bitstream) ) return false;  // field 6: VDM payload data
+	if ( !NMEA0183Msg.AddUInt32Field(0) ) return false;  // field 7: number of fillbits (0-5)
+  
+  return true;
+}
+bool NMEA0183SetVDO(tNMEA0183Msg &NMEA0183Msg, char *channel, char *bitstream, uint32_t count, uint32_t number, uint32_t id, uint32_t fillbits,  const char *Src) {
+	if ( !NMEA0183Msg.Init("VDO",Src, '!') ) return false;    // field 1: packet identifier,  VDM
+	if ( !NMEA0183Msg.AddUInt32Field(count) ) return false;  // field 2: fragment count
+	if ( !NMEA0183Msg.AddUInt32Field(number) ) return false;  // field 3: fragment number
+	if (number == 1 && count == 1){
+			if ( !NMEA0183Msg.AddEmptyField() ) return false;  // field 4: sequential message ID	
+	}else{
+			if ( !NMEA0183Msg.AddUInt32Field(id) ) return false;// field 4: sequential message ID
+	}
+	if ( !NMEA0183Msg.AddStrField(channel) ) return false;  // field 5: Radio Channel code,  A or B
+	if ( !NMEA0183Msg.AddStrField(bitstream) ) return false;  // field 6: VDM payload data
+	if ( !NMEA0183Msg.AddUInt32Field(fillbits) ) return false;  // field 7: number of fillbits (0-5)
+  
+  return true;
+}
+
 
 //*****************************************************************************
 //$GPRTE,2,1,c,0,W3IWI,DRIVWY,32CEDR,32-29,32BKLD,32-I95,32-US1,BW-32,BW-198*69
@@ -674,6 +757,38 @@ bool NMEA0183ParseBOD_nc(const tNMEA0183Msg &NMEA0183Msg, tBOD &bod) {
 }
 
 //*****************************************************************************
+// MWD - Wind Direction & Speed
+//$IIMWD,120.1,T,9.5,M,15.0,N,7.5,M*hh<CR><LF>
+//                            Wind speed, meters/second 
+//                     Wind speed, knots
+//               Wind direction, 0 to 359 degrees Magnetic
+//       Wind direction, 0 to 359 degrees True
+ 
+bool NMEA0183ParseMWD_nc(const tNMEA0183Msg &NMEA0183Msg,double &WindDirection, double &WindSpeed) {
+  bool result=( NMEA0183Msg.FieldCount()>=6 );
+
+  if ( result ) {
+    WindDirection=atof(NMEA0183Msg.Field(0));
+    WindSpeed=atof(NMEA0183Msg.Field(4));
+  }
+
+  return result;
+}
+
+bool NMEA0183SetMWD(tNMEA0183Msg &NMEA0183Msg, double WindDirection, double WindSpeed, const char *Src) {
+  if ( !NMEA0183Msg.Init("MWD",Src) ) return false;
+  if ( !NMEA0183Msg.AddDoubleField(WindDirection) ) return false;
+  if ( !NMEA0183Msg.AddStrField("T") ) return false;
+  if ( !NMEA0183Msg.AddDoubleField(WindDirection) ) return false;
+  if ( !NMEA0183Msg.AddStrField("M") ) return false;
+  if ( !NMEA0183Msg.AddDoubleField(WindSpeed*=msTokn) ) return false;
+  if ( !NMEA0183Msg.AddStrField("N") ) return false;
+  if ( !NMEA0183Msg.AddDoubleField(WindSpeed) ) return false;
+  if ( !NMEA0183Msg.AddStrField("M") ) return false;
+  return true;
+}
+
+//*****************************************************************************
 // MWV - Wind Speed and Angle
 //$IIMWV,120.1,R,9.5,M,A,a*hh
 bool NMEA0183ParseMWV_nc(const tNMEA0183Msg &NMEA0183Msg,double &WindAngle, tNMEA0183WindReference &Reference, double &WindSpeed) {
@@ -709,14 +824,136 @@ bool NMEA0183SetMWV(tNMEA0183Msg &NMEA0183Msg, double WindAngle, tNMEA0183WindRe
 }
 
 //*****************************************************************************
-// VHW - Water speed and heading
-bool NMEA0183SetVHW(tNMEA0183Msg &NMEA0183Msg, double TrueHeading, double MagneticHeading, double BoatSpeed, const char *Src) {
-  if ( !NMEA0183Msg.Init("VHW",Src) ) return false;
-  if ( !NMEA0183Msg.AddDoubleField(TrueHeading,radToDeg,tNMEA0183Msg::DefDoubleFormat,"T") ) return false;
-  if ( !NMEA0183Msg.AddDoubleField(MagneticHeading,radToDeg,tNMEA0183Msg::DefDoubleFormat,"M") ) return false;
-  if ( !NMEA0183Msg.AddDoubleField(BoatSpeed,msTokn,tNMEA0183Msg::DefDoubleFormat,"N") ) return false;
-  if ( !NMEA0183Msg.AddDoubleField(BoatSpeed,msTokmh,tNMEA0183Msg::DefDoubleFormat,"K") ) return false;
+// XDR - Transducer Measurements
+/*
+Dual frequency depth
+$SDXDR,D,2.85,M,XDHI,D,2.92,M,XDLO,C,23.16,C,WTHI*77
+$SDXDR,D,2.83,M,XDHI,D,2.92,M,XDLO,C,23.16,C,WTHI*71      
 
+Water Temperature
+$SDXDR,C,23.13,C,WTHI*76
+
+Weather Sensor
+$IIXDR,P,1.01408,B,Barometer*2B
+$IIXDR,C,19.8,C,AirTemp*26      
+
+Vessel Motion
+$IIXDR,A,4,D,ROLL,A,-2,D,PTCH,A*1A      
+
+Examples of NMEA0183 XDR Transducer Types
+Type 	Meaning
+A 	Angular displacement
+C 	Temperature
+D 	Depth
+F 	Frequency
+H 	Humidity
+N 	Force
+P 	Pressure
+R 	Flow
+
+Examples of NMEA0183 XDR units of measurement
+Unit 	Meaning
+B 	Bar
+C 	Celsius
+D 	Degrees
+M 	Meter
+N 	Newton
+P 	Percent
+*/
+
+/*
+bool NMEA0183ParseXDR_nc(const tNMEA0183Msg &NMEA0183Msg,double &WindAngle, tNMEA0183WindReference &Reference, double &WindSpeed) {
+  bool result=( NMEA0183Msg.FieldCount()>=4 );
+
+  if ( result ) {
+    WindAngle=atof(NMEA0183Msg.Field(0));
+    switch ( NMEA0183Msg.Field(1)[0] ) {
+      case 'T' : Reference=NMEA0183Wind_True; break;
+      case 'R' :
+      default : Reference=NMEA0183Wind_Apparent; break;
+    }
+    WindSpeed=atof(NMEA0183Msg.Field(2));
+    switch ( NMEA0183Msg.Field(3)[0] ) {
+      case 'K' : WindSpeed*=kmhToms; break;
+      case 'N' : WindSpeed*=knToms; break;
+      case 'M' :
+      default : ;
+    }
+  }
+
+  return result;
+}
+*/
+
+bool NMEA0183SetXDR(tNMEA0183Msg &NMEA0183Msg, char TransducerType, double TransducerValue, const char *TransducerName, const char *Src) {
+  if ( !NMEA0183Msg.Init("XDR",Src) ) return false;
+  	
+  if ( TransducerType == 1 ) {
+  	if ( !NMEA0183Msg.AddStrField("C") ) return false;
+ 	  if ( !NMEA0183Msg.AddDoubleField(TransducerValue-273.15) ) return false;
+  	if ( !NMEA0183Msg.AddStrField("C") ) return false;
+  	if ( !NMEA0183Msg.AddStrField(TransducerName) ) return false;
+  }
+  
+  if ( TransducerType == 2 ) {
+  	if ( !NMEA0183Msg.AddStrField("P") ) return false;
+	  if ( !NMEA0183Msg.AddDoubleField(TransducerValue/100000,1,"%.3f") ) return false;
+  	if ( !NMEA0183Msg.AddStrField("B") ) return false;
+  	if ( !NMEA0183Msg.AddStrField(TransducerName) ) return false;
+  }
+  
   return true;
 }
 
+// GSV - GPS sattellites in view
+//$GPGSV,2,1,08,01,40,083,46,02,17,308,41,12,07,344,39,14,22,228,45*75
+bool NMEA0183SetGSV(tNMEA0183Msg &NMEA0183Msg, uint32_t totalMSG, uint32_t thisMSG, uint32_t SatelliteCount, 
+					uint32_t PRN1, uint32_t Elevation1, uint32_t Azimuth1, uint32_t SNR1,
+					uint32_t PRN2, uint32_t Elevation2, uint32_t Azimuth2, uint32_t SNR2,
+					uint32_t PRN3, uint32_t Elevation3, uint32_t Azimuth3, uint32_t SNR3,
+					uint32_t PRN4, uint32_t Elevation4, uint32_t Azimuth4, uint32_t SNR4
+					, const char *Src){
+	if ( !NMEA0183Msg.Init("GSV",Src) ) return false;					
+	if ( !NMEA0183Msg.AddUInt32Field(totalMSG) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(thisMSG) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(SatelliteCount) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(PRN1) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(Elevation1) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(Azimuth1) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(SNR1) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(PRN2) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(Elevation2) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(Azimuth2) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(SNR2) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(PRN3) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(Elevation3) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(Azimuth3) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(SNR3) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(PRN4) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(Elevation4) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(Azimuth4) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(SNR4) )return false;	 
+	return true; 
+}
+	  
+//*****************************************************************************
+// $GPZDA,160012.71,11,03,2004,-1,00*7D
+bool NMEA0183ParseZDA(const tNMEA0183Msg &NMEA0183Msg, double &GPSTime, int &GPSDay, int &GPSMonth, int &GPSYear,
+                      int &LZD, int &LZMD) {
+  bool result=( NMEA0183Msg.FieldCount()>=6 );
+
+  if ( result ) {
+    GPSTime=NMEA0183GPTimeToSeconds(NMEA0183Msg.Field(0));
+    GPSDay=atoi(NMEA0183Msg.Field(1));
+    GPSMonth=atoi(NMEA0183Msg.Field(2));
+    GPSYear=atoi(NMEA0183Msg.Field(3));
+    LZD=atoi(NMEA0183Msg.Field(4));
+    LZMD=atoi(NMEA0183Msg.Field(5));
+  }
+
+  return result;
+}
+
+	  
+	  
+	  
