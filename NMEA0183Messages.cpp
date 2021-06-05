@@ -823,7 +823,45 @@ bool NMEA0183SetMWV(tNMEA0183Msg &NMEA0183Msg, double WindAngle, tNMEA0183WindRe
   return true;
 }
 
+// GSV - GPS sattellites in view
+//$GPGSV,2,1,08,01,40,083,46,02,17,308,41,12,07,344,39,14,22,228,45*75
+bool NMEA0183SetGSV(tNMEA0183Msg &NMEA0183Msg, uint32_t totalMSG, uint32_t thisMSG, uint32_t SatelliteCount, 
+					uint32_t PRN1, uint32_t Elevation1, uint32_t Azimuth1, uint32_t SNR1,
+					uint32_t PRN2, uint32_t Elevation2, uint32_t Azimuth2, uint32_t SNR2,
+					uint32_t PRN3, uint32_t Elevation3, uint32_t Azimuth3, uint32_t SNR3,
+					uint32_t PRN4, uint32_t Elevation4, uint32_t Azimuth4, uint32_t SNR4
+					, const char *Src){
+	if ( !NMEA0183Msg.Init("GSV",Src) ) return false;					
+	if ( !NMEA0183Msg.AddUInt32Field(totalMSG) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(thisMSG) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(SatelliteCount) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(PRN1) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(Elevation1) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(Azimuth1) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(SNR1) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(PRN2) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(Elevation2) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(Azimuth2) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(SNR2) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(PRN3) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(Elevation3) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(Azimuth3) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(SNR3) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(PRN4) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(Elevation4) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(Azimuth4) )return false;
+	if ( !NMEA0183Msg.AddUInt32Field(SNR4) )return false;	 
+	return true; 
+}
+	  
 //*****************************************************************************
+// VHW - Water speed and heading
+bool NMEA0183SetVHW(tNMEA0183Msg &NMEA0183Msg, double TrueHeading, double MagneticHeading, double BoatSpeed, const char *Src) {
+  if ( !NMEA0183Msg.Init("VHW",Src) ) return false;
+  if ( !NMEA0183Msg.AddDoubleField(TrueHeading,radToDeg,tNMEA0183Msg::DefDoubleFormat,"T") ) return false;
+  if ( !NMEA0183Msg.AddDoubleField(MagneticHeading,radToDeg,tNMEA0183Msg::DefDoubleFormat,"M") ) return false;
+  if ( !NMEA0183Msg.AddDoubleField(BoatSpeed,msTokn,tNMEA0183Msg::DefDoubleFormat,"N") ) return false;
+  if ( !NMEA0183Msg.AddDoubleField(BoatSpeed,msTokmh,tNMEA0183Msg::DefDoubleFormat,"K") ) return false;
 // XDR - Transducer Measurements
 /*
 Dual frequency depth
@@ -902,7 +940,16 @@ bool NMEA0183SetXDR(tNMEA0183Msg &NMEA0183Msg, char TransducerType, double Trans
   	if ( !NMEA0183Msg.AddStrField(TransducerName) ) return false;
   }
   
-  return true;
+  if ( result ) {
+    GPSTime=NMEA0183GPTimeToSeconds(NMEA0183Msg.Field(0));
+    GPSDay=atoi(NMEA0183Msg.Field(1));
+    GPSMonth=atoi(NMEA0183Msg.Field(2));
+    GPSYear=atoi(NMEA0183Msg.Field(3));
+    LZD=atoi(NMEA0183Msg.Field(4));
+    LZMD=atoi(NMEA0183Msg.Field(5));
+  }
+
+  return result;
 }
 
 // GSV - GPS sattellites in view
