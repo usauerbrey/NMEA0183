@@ -393,6 +393,19 @@ inline bool NMEA0183ParseBOD(const tNMEA0183Msg &NMEA0183Msg, tBOD &bod) {
 }
 
 //*****************************************************************************
+// MTW - Water Temperature  
+// $--MTW,x.x,C*hh<CR><LF>
+//        Temperature, degrees C
+bool NMEA0183ParseMTW_nc(const tNMEA0183Msg &NMEA0183Msg,double &WaterTemperature);
+
+inline bool NMEA0183ParseMTW(const tNMEA0183Msg &NMEA0183Msg,double &WaterTemperature) {
+  return (NMEA0183Msg.IsMessageCode("MTW")
+            ?NMEA0183ParseMTW_nc(NMEA0183Msg,WaterTemperature)
+            :false);
+}
+
+bool NMEA0183SetMTW(tNMEA0183Msg &NMEA0183Msg, double WaterTemperature, const char *Src="II");
+//*****************************************************************************
 // MWD - Wind Direction & Speed
 bool NMEA0183ParseMWD_nc(const tNMEA0183Msg &NMEA0183Msg,double &WindDirection, double &WindSpeed);
 

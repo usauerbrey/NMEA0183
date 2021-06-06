@@ -758,6 +758,27 @@ bool NMEA0183ParseBOD_nc(const tNMEA0183Msg &NMEA0183Msg, tBOD &bod) {
 }
 
 //*****************************************************************************
+// MTW - Water Temperature  
+// $--MTW,x.x,C*hh<CR><LF>
+//        Temperature, degrees C
+bool NMEA0183ParseMTW_nc(const tNMEA0183Msg &NMEA0183Msg, double &WaterTemperature) {
+  bool result=( NMEA0183Msg.FieldCount()>=2 );
+
+  if ( result ) {
+    WaterTemperature=atof(NMEA0183Msg.Field(0));
+  }
+
+  return result;
+}
+
+bool NMEA0183SetMTW(tNMEA0183Msg &NMEA0183Msg, double WaterTemperature, const char *Src) {
+  if ( !NMEA0183Msg.Init("MTW",Src) ) return false;
+  if ( !NMEA0183Msg.AddDoubleField(WaterTemperature-273.15) ) return false;
+  if ( !NMEA0183Msg.AddStrField("C") ) return false;
+  return true;
+}
+
+//*****************************************************************************
 // MWD - Wind Direction & Speed
 //$IIMWD,120.1,T,9.5,M,15.0,N,7.5,M*hh<CR><LF>
 //                            Wind speed, meters/second 
@@ -765,7 +786,7 @@ bool NMEA0183ParseBOD_nc(const tNMEA0183Msg &NMEA0183Msg, tBOD &bod) {
 //               Wind direction, 0 to 359 degrees Magnetic
 //       Wind direction, 0 to 359 degrees True
  
-bool NMEA0183ParseMWD_nc(const tNMEA0183Msg &NMEA0183Msg,double &WindDirection, double &WindSpeed) {
+bool NMEA0183ParseMWD_nc(const tNMEA0183Msg &NMEA0183Msg, double &WindDirection, double &WindSpeed) {
   bool result=( NMEA0183Msg.FieldCount()>=6 );
 
   if ( result ) {
