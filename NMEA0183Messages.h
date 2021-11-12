@@ -418,6 +418,30 @@ inline bool NMEA0183ParseBOD(const tNMEA0183Msg &NMEA0183Msg, tBOD &bod) {
 }
 
 //*****************************************************************************
+// MTW - Water Temperature  
+// $--MTW,x.x,C*hh<CR><LF>
+//        Temperature, degrees C
+bool NMEA0183ParseMTW_nc(const tNMEA0183Msg &NMEA0183Msg,double &WaterTemperature);
+
+inline bool NMEA0183ParseMTW(const tNMEA0183Msg &NMEA0183Msg,double &WaterTemperature) {
+  return (NMEA0183Msg.IsMessageCode("MTW")
+            ?NMEA0183ParseMTW_nc(NMEA0183Msg,WaterTemperature)
+            :false);
+}
+
+bool NMEA0183SetMTW(tNMEA0183Msg &NMEA0183Msg, double WaterTemperature, const char *Src="II");
+//*****************************************************************************
+// MWD - Wind Direction & Speed
+bool NMEA0183ParseMWD_nc(const tNMEA0183Msg &NMEA0183Msg,double &WindDirection, double &WindSpeed);
+
+inline bool NMEA0183ParseMWD(const tNMEA0183Msg &NMEA0183Msg,double &WindDirection, double &WindSpeed) {
+  return (NMEA0183Msg.IsMessageCode("MWD")
+            ?NMEA0183ParseMWD_nc(NMEA0183Msg,WindDirection,WindSpeed)
+            :false);
+}
+
+bool NMEA0183SetMWD(tNMEA0183Msg &NMEA0183Msg, double WindDirection, double WindSpeed, const char *Src="II");
+//*****************************************************************************
 // MWV - Wind Speed and Angle
 bool NMEA0183ParseMWV_nc(const tNMEA0183Msg &NMEA0183Msg,double &WindAngle, tNMEA0183WindReference &Reference, double &WindSpeed);
 
@@ -427,8 +451,7 @@ inline bool NMEA0183ParseMWV(const tNMEA0183Msg &NMEA0183Msg,double &WindAngle, 
             :false);
 }
 
-bool NMEA0183SetMWV(tNMEA0183Msg &NMEA0183Msg, double WindAngle, tNMEA0183WindReference Reference, double WindSpeed, const char *Src="II");
-//*****************************************************************************
+bool NMEA0183SetMWV(tNMEA0183Msg &NMEA0183Msg, double WindAngle, tNMEA0183WindReference Reference, double WindSpeed, const char *Src="II");//*****************************************************************************
 // GSV - GPS Satellites in view
 bool NMEA0183SetGSV(tNMEA0183Msg &NMEA0183Msg, uint32_t totalMSG, uint32_t thisMSG, uint32_t SatelliteCount, 
 					uint32_t PRN1, uint32_t Elevation1, uint32_t Azimuth1, uint32_t SNR1,
@@ -443,6 +466,19 @@ bool NMEA0183ParseGSV(const tNMEA0183Msg &NMEA0183Msg, int &totalMSG, int &thisM
                         struct tGSV &Msg3,
                         struct tGSV &Msg4);
 
+//*****************************************************************************
+// XDR - Transducer Measurements
+/*
+bool NMEA0183ParseXDR_nc(const tNMEA0183Msg &NMEA0183Msg,double &WindDirection, double &WindSpeed);
+
+inline bool NMEA0183ParseMWD(const tNMEA0183Msg &NMEA0183Msg,double &WindDirection, double &WindSpeed) {
+  return (NMEA0183Msg.IsMessageCode("MWD")
+            ?NMEA0183ParseMWD_nc(NMEA0183Msg,WindDirection,WindSpeed)
+            :false);
+}
+*/
+
+bool NMEA0183SetXDR(tNMEA0183Msg &NMEA0183Msg, char TransducerType, double TransducerValue, const char *TransducerName, const char *Src="II");
 //*****************************************************************************
 // ZDA - Time & Date
 bool NMEA0183ParseZDA(const tNMEA0183Msg &NMEA0183Msg, double &GPSTime, int &GPSDay,

@@ -758,6 +758,59 @@ bool NMEA0183ParseBOD_nc(const tNMEA0183Msg &NMEA0183Msg, tBOD &bod) {
 }
 
 //*****************************************************************************
+// MTW - Water Temperature  
+// $--MTW,x.x,C*hh<CR><LF>
+//        Temperature, degrees C
+bool NMEA0183ParseMTW_nc(const tNMEA0183Msg &NMEA0183Msg, double &WaterTemperature) {
+  bool result=( NMEA0183Msg.FieldCount()>=2 );
+
+  if ( result ) {
+    WaterTemperature=atof(NMEA0183Msg.Field(0));
+  }
+
+  return result;
+}
+
+bool NMEA0183SetMTW(tNMEA0183Msg &NMEA0183Msg, double WaterTemperature, const char *Src) {
+  if ( !NMEA0183Msg.Init("MTW",Src) ) return false;
+  if ( !NMEA0183Msg.AddDoubleField(WaterTemperature-273.15) ) return false;
+  if ( !NMEA0183Msg.AddStrField("C") ) return false;
+  return true;
+}
+
+//*****************************************************************************
+// MWD - Wind Direction & Speed
+//$IIMWD,120.1,T,9.5,M,15.0,N,7.5,M*hh<CR><LF>
+//                            Wind speed, meters/second 
+//                     Wind speed, knots
+//               Wind direction, 0 to 359 degrees Magnetic
+//       Wind direction, 0 to 359 degrees True
+ 
+bool NMEA0183ParseMWD_nc(const tNMEA0183Msg &NMEA0183Msg, double &WindDirection, double &WindSpeed) {
+  bool result=( NMEA0183Msg.FieldCount()>=6 );
+
+  if ( result ) {
+    WindDirection=atof(NMEA0183Msg.Field(0));
+    WindSpeed=atof(NMEA0183Msg.Field(4));
+  }
+
+  return result;
+}
+
+bool NMEA0183SetMWD(tNMEA0183Msg &NMEA0183Msg, double WindDirection, double WindSpeed, const char *Src) {
+  if ( !NMEA0183Msg.Init("MWD",Src) ) return false;
+  if ( !NMEA0183Msg.AddDoubleField(WindDirection) ) return false;
+  if ( !NMEA0183Msg.AddStrField("T") ) return false;
+  if ( !NMEA0183Msg.AddDoubleField(WindDirection) ) return false;
+  if ( !NMEA0183Msg.AddStrField("M") ) return false;
+  if ( !NMEA0183Msg.AddDoubleField(WindSpeed*=msTokn) ) return false;
+  if ( !NMEA0183Msg.AddStrField("N") ) return false;
+  if ( !NMEA0183Msg.AddDoubleField(WindSpeed) ) return false;
+  if ( !NMEA0183Msg.AddStrField("M") ) return false;
+  return true;
+}
+
+//*****************************************************************************
 // MWV - Wind Speed and Angle
 //$IIMWV,120.1,R,9.5,M,A,a*hh
 bool NMEA0183ParseMWV_nc(const tNMEA0183Msg &NMEA0183Msg,double &WindAngle, tNMEA0183WindReference &Reference, double &WindSpeed) {
@@ -789,6 +842,87 @@ bool NMEA0183SetMWV(tNMEA0183Msg &NMEA0183Msg, double WindAngle, tNMEA0183WindRe
   if ( !NMEA0183Msg.AddDoubleField(WindSpeed) ) return false;
   if ( !NMEA0183Msg.AddStrField("M") ) return false;
   if ( !NMEA0183Msg.AddStrField("A") ) return false;
+  return true;
+}
+ 
+//*****************************************************************************
+// XDR - Transducer Measurements
+/*
+Dual frequency depth
+$SDXDR,D,2.85,M,XDHI,D,2.92,M,XDLO,C,23.16,C,WTHI*77
+$SDXDR,D,2.83,M,XDHI,D,2.92,M,XDLO,C,23.16,C,WTHI*71      
+
+Water Temperature
+$SDXDR,C,23.13,C,WTHI*76
+
+Weather Sensor
+$IIXDR,P,1.01408,B,Barometer*2B
+$IIXDR,C,19.8,C,AirTemp*26      
+
+Vessel Motion
+$IIXDR,A,4,D,ROLL,A,-2,D,PTCH,A*1A      
+
+Examples of NMEA0183 XDR Transducer Types
+Type 	Meaning
+A 	Angular displacement
+C 	Temperature
+D 	Depth
+F 	Frequency
+H 	Humidity
+N 	Force
+P 	Pressure
+R 	Flow
+
+Examples of NMEA0183 XDR units of measurement
+Unit 	Meaning
+B 	Bar
+C 	Celsius
+D 	Degrees
+M 	Meter
+N 	Newton
+P 	Percent
+*/
+
+/*
+bool NMEA0183ParseXDR_nc(const tNMEA0183Msg &NMEA0183Msg,double &WindAngle, tNMEA0183WindReference &Reference, double &WindSpeed) {
+  bool result=( NMEA0183Msg.FieldCount()>=4 );
+
+  if ( result ) {
+    WindAngle=atof(NMEA0183Msg.Field(0));
+    switch ( NMEA0183Msg.Field(1)[0] ) {
+      case 'T' : Reference=NMEA0183Wind_True; break;
+      case 'R' :
+      default : Reference=NMEA0183Wind_Apparent; break;
+    }
+    WindSpeed=atof(NMEA0183Msg.Field(2));
+    switch ( NMEA0183Msg.Field(3)[0] ) {
+      case 'K' : WindSpeed*=kmhToms; break;
+      case 'N' : WindSpeed*=knToms; break;
+      case 'M' :
+      default : ;
+    }
+  }
+
+  return result;
+}
+*/
+
+bool NMEA0183SetXDR(tNMEA0183Msg &NMEA0183Msg, char TransducerType, double TransducerValue, const char *TransducerName, const char *Src) {
+  if ( !NMEA0183Msg.Init("XDR",Src) ) return false;
+  	
+  if ( TransducerType == 1 ) {
+  	if ( !NMEA0183Msg.AddStrField("C") ) return false;
+ 	  if ( !NMEA0183Msg.AddDoubleField(TransducerValue-273.15) ) return false;
+  	if ( !NMEA0183Msg.AddStrField("C") ) return false;
+  	if ( !NMEA0183Msg.AddStrField(TransducerName) ) return false;
+  }
+  
+  if ( TransducerType == 2 ) {
+  	if ( !NMEA0183Msg.AddStrField("P") ) return false;
+	  if ( !NMEA0183Msg.AddDoubleField(TransducerValue/100000,1,"%.3f") ) return false;
+  	if ( !NMEA0183Msg.AddStrField("B") ) return false;
+  	if ( !NMEA0183Msg.AddStrField(TransducerName) ) return false;
+  }
   return true;
 }
 
