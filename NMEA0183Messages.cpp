@@ -115,7 +115,7 @@ time_t NMEA0183GPSDateTimetotime_t(const char *dateStr, const char *timeStr, tim
   tmElements_t TimeElements;
   char StrCvt[3]="00";
 
-    if (dateStr!=0 && strlen(dateStr)==6) {
+    if (dateStr != 0 && strlen(dateStr) == 6) {
       StrCvt[0]=dateStr[0]; StrCvt[1]=dateStr[1];
       tNMEA0183Msg::SetDay(TimeElements,atoi(StrCvt));
       StrCvt[0]=dateStr[2]; StrCvt[1]=dateStr[3];
