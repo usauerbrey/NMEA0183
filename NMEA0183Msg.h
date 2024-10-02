@@ -20,7 +20,7 @@ OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef _tNMEA0183Msg_H_
 #define _tNMEA0183Msg_H_
 
-#include <string.h>
+//#include <string.h>
 #include <time.h>
 #include "NMEA0183Stream.h"
 
