@@ -25,7 +25,7 @@ OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef _tNMEA0183_MESSAGES_H_
 #define _tNMEA0183_MESSAGES_H_
 #include <stdio.h>
-#include <time.h>
+//#include <time.h>
 #include "NMEA0183Msg.h"
 
 #ifndef Arduino
