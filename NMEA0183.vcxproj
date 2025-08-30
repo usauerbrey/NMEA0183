@@ -1,0 +1,134 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|ARM">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM">
+      <Configuration>Release</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|ARM64">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM64">
+      <Configuration>Release</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x86">
+      <Configuration>Debug</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x86">
+      <Configuration>Release</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{546ca78c-ed06-4c0c-a5ac-8ccf7a50ae75}</ProjectGuid>
+    <Keyword>Linux</Keyword>
+    <RootNamespace>NMEA0183</RootNamespace>
+    <ProjectName>NMEA0183</ProjectName>
+    <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
+    <ApplicationType>Linux</ApplicationType>
+    <ApplicationTypeRevision>1.0</ApplicationTypeRevision>
+    <TargetLinuxPlatform>Generic</TargetLinuxPlatform>
+    <LinuxProjectType>{D51BCBC9-82E9-4017-911E-C93873C4EA2B}</LinuxProjectType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared" />
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <LinuxIncludePath>c:\visualmicro\ignore</LinuxIncludePath>
+    <wiringPiIncludePath>c:\visualmicro\pi-ignore</wiringPiIncludePath>
+    <TargetOSAndVersion>Arduino</TargetOSAndVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="src\arduino folders read me.txt">
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectCapability Include="VisualMicro" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="NMEA0183.h" />
+    <ClInclude Include="NMEA0183LinuxStream.h" />
+    <ClInclude Include="NMEA0183Messages.h" />
+    <ClInclude Include="NMEA0183Msg.h" />
+    <ClInclude Include="NMEA0183Stream.h" />
+    <ClInclude Include="__vm\.NMEA0183.vsarduino.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="NMEA0183.cpp" />
+    <ClCompile Include="NMEA0183LinuxStream.cpp" />
+    <ClCompile Include="NMEA0183Messages.cpp" />
+    <ClCompile Include="NMEA0183Msg.cpp" />
+    <ClCompile Include="NMEA0183Stream.cpp" />
+  </ItemGroup>
+  <PropertyGroup>
+    <DebuggerFlavor>VisualMicroDebugger</DebuggerFlavor>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\teensy\avr\cores\teensy3;$(ProjectDir)..\..\..\..\..\..\..\program files (x86)\arduino\hardware\tools\arm\arm-none-eabi\include\c++\5.4.1;$(ProjectDir)..\..\..\..\..\..\..\program files (x86)\arduino\hardware\tools\arm\arm-none-eabi\include\c++\5.4.1\arm-none-eabi\armv7e-m;$(ProjectDir)..\..\..\..\..\..\..\program files (x86)\arduino\hardware\tools\arm\arm-none-eabi\include\c++\5.4.1\backward;$(ProjectDir)..\..\..\..\..\..\..\program files (x86)\arduino\hardware\tools\arm\lib\gcc\arm-none-eabi\5.4.1\include;$(ProjectDir)..\..\..\..\..\..\..\program files (x86)\arduino\hardware\tools\arm\lib\gcc\arm-none-eabi\5.4.1\include-fixed;$(ProjectDir)..\..\..\..\..\..\..\program files (x86)\arduino\hardware\tools\arm\arm-none-eabi\include</IncludePath>
+    <RemoteCCompileToolExe>$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\tools\arm\bin\arm-none-eabi-g++</RemoteCCompileToolExe>
+    <RemoteCppCompileToolExe>$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\tools\arm\bin\arm-none-eabi-g++</RemoteCppCompileToolExe>
+    <ValidateArchitecture>false</ValidateArchitecture>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\teensy\avr\cores\teensy3;$(ProjectDir)..\..\..\..\..\..\..\program files (x86)\arduino\hardware\tools\arm\arm-none-eabi\include\c++\5.4.1;$(ProjectDir)..\..\..\..\..\..\..\program files (x86)\arduino\hardware\tools\arm\arm-none-eabi\include\c++\5.4.1\arm-none-eabi\armv7e-m;$(ProjectDir)..\..\..\..\..\..\..\program files (x86)\arduino\hardware\tools\arm\arm-none-eabi\include\c++\5.4.1\backward;$(ProjectDir)..\..\..\..\..\..\..\program files (x86)\arduino\hardware\tools\arm\lib\gcc\arm-none-eabi\5.4.1\include;$(ProjectDir)..\..\..\..\..\..\..\program files (x86)\arduino\hardware\tools\arm\lib\gcc\arm-none-eabi\5.4.1\include-fixed;$(ProjectDir)..\..\..\..\..\..\..\program files (x86)\arduino\hardware\tools\arm\arm-none-eabi\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <GccToolChain>$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\tools\arm\bin\arm-none-eabi-g++</GccToolChain>
+      <CppLanguageStandard>gnu++1y</CppLanguageStandard>
+      <CLanguageStandard>gnu11</CLanguageStandard>
+      <CAdditionalWarning />
+      <CppAdditionalWarning />
+      <ForcedIncludeFiles>$(ProjectDir)..\..\..\..\..\..\..\program files\microsoft visual studio\2022\community\common7\ide\extensions\4i0a2qao.niw\Micro Platforms\default\vm-intelli-pre.h;$(ProjectDir)..\..\..\..\..\AppData\Local\Temp\VMBuilds\NMEA0183\teensy31\Debug\.vmintelli\29cd6a3da8b4ad203104df5e7d9e7b1d\vm-intelli-gcc-defines.h;$(ProjectDir)..\..\..\..\..\..\..\program files\microsoft visual studio\2022\community\common7\ide\extensions\4i0a2qao.niw\Micro Platforms\default\vm-intelli-post.h;$(ProjectDir)__vm\.NMEA0183.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <UndefineAllPreprocessorDefinitions>true</UndefineAllPreprocessorDefinitions>
+      <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
+      <PreprocessorDefinitions>_VMICRO_INTELLISENSE;__HARDWARE_mk20dx256__;__HARDWARE_MK20DX256__;__MK20DX256__;TEENSYDUINO=157;ARDUINO=108019;ARDUINO_TEENSY32;F_CPU=96000000;USB_SERIAL;LAYOUT_US_ENGLISH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties config.Debug.customdebug_teensy31_debugger_type="universal" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>
